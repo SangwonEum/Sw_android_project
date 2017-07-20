@@ -3,12 +3,14 @@ package controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,11 +89,50 @@ public class FileUploadController {
 //   System.out.println("fileUploadPage2");
 	  
    @RequestMapping(value="/fileUploadPage")
-   public String fileUpload(@RequestParam("uploaded_file") MultipartFile file) throws IOException {
+   public String fileUpload(@RequestParam("uploaded_file") MultipartFile file
+		   ,HttpServletRequest request
+		  ) throws IOException {
 	   
+	   String fileName = "hello.jpg";
+	 
+	  int BUFFERED_SIZE = 10;
+	  if(fileName == null) fileName="example2.jpg";
 	  System.out.println("multipartfile");
 	  System.out.println(file.getName());
 	  System.out.println(file.getSize());
+	  
+	  InputStream inputstm = file.getInputStream();
+	  System.out.println(request.getServletContext().getRealPath("/"));
+	  String imgpath = request.getServletContext().getRealPath("/")+"img\\";
+	  
+	  
+	  String saveFilePath = imgpath + fileName;
+	  
+	  File filed = new File(saveFilePath);
+	  filed.getParentFile().mkdirs();
+	  FileWriter writer = new FileWriter(filed);
+	  FileOutputStream outputStream = new FileOutputStream(saveFilePath);
+	  
+	  int bytesRead = -1;
+	  byte[] buffer = new byte[BUFFERED_SIZE];
+	  
+	  while((bytesRead =  inputstm.read(buffer))!= -1){
+		  outputStream.write(buffer,0,bytesRead);
+		  
+	  }
+	  outputStream.close();
+	  inputstm.close();
+	  System.out.println("Done");
+	  //String rootPath = request.getSession().getServletContext().getContext("").getRealPath("") ;
+	  //System.out.println(rootPath);
+	
+	  
+	  
+	  
+	  	//String relativeWebPath = "/";
+		//String absolutePath = getServletContext().getRealPath(relativeWebPath);
+	  	//Set pathSet = (Set) request.getSession().getServletContext().getResourcePaths("/");
+	  	//System.out.println(pathSet);
 	   
 	   //      
 //	   BufferedInputStream in = null;	
